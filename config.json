@@ -1,0 +1,7 @@
+{
+    "log" :{s
+        "screanlv" : "WARNING",
+        "filelv" : "DEBUG",
+        "filepath" : "./log.log"
+    }
+}
