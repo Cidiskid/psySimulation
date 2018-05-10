@@ -1,7 +1,7 @@
 {
-    "log" :{s
-        "screanlv" : "WARNING",
+    "log" :{
+        "screanlv" : "INFO",
         "filelv" : "DEBUG",
-        "filepath" : "./log.log"
+        "filepath" : "log.log"
     }
 }

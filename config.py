@@ -8,7 +8,7 @@ class Config:
     def load(self):
         if( not self.loaded):
             self.Reload()
-        self.Loaded = True
+        self.loaded = True
     def Reload(self):
         with open(self.config_path, "r") as fp:
             self.data = json.load(fp)
