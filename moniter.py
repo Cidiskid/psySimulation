@@ -14,3 +14,73 @@ def LogInit():
     formatter = logging.Formatter('%(asctime)s %(funcName)s:%(lineno)d[%(levelname)s] %(message)s')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+
+def Draw3dPairs(point_pairs):
+    from mpl_toolkits.mplot3d import Axes3D
+    import matplotlib.pyplot as plt
+    from matplotlib import cm
+    import numpy as np
+
+    x = np.array(point_pairs)[:,0]
+    y = np.array(point_pairs)[:,1]
+    z = np.array(point_pairs)[:,2]
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_trisurf(x, y, z, linewidth=0.2, antialiased=True, cmap=cm.gist_earth,)
+
+    plt.show()
+
+def DrawHist(nums, label=None):
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib import mlab
+
+    x = np.array(nums)
+    n_bins = int(np.sqrt(len(x) * 2))
+    mu = x.mean()
+    sigma = x.std()
+    logging.info("len(x)= %d, n_bins= %d, mu= %0.3f, sigma= %0.3f"%(len(x), n_bins, mu, sigma))
+    fig, ax = plt.subplots(figsize=(8, 4))
+
+    # plot the cumulative histogram
+    n, bins, patches = ax.hist(x, n_bins, normed=1, histtype='stepfilled', label=label, alpha=0.7)
+
+    # Add a line showing the expected distribution.
+    y = mlab.normpdf(bins, mu, sigma)
+    ax.plot(bins, y, 'k--', linewidth=1.5)
+
+    # tidy up the figure
+    ax.grid(True)
+    ax.legend(loc='right')
+    ax.set_title(r'Histogram: $\mu=%0.3f$, $\sigma=%0.3f$'%(mu, sigma))
+    plt.show()
+
+def animation_demo():
+    from matplotlib import pyplot as plt
+    from matplotlib import animation
+    import numpy as np
+    fig, ax = plt.subplots()
+
+    x = np.arange(0, 2*np.pi, 0.01)
+    line, = ax.plot(x, np.sin(x))
+
+    def animate(i):
+        line.set_ydata(np.sin(x + i / 10.0)*np.sin(i/20.0)*0.5)
+        return line,
+
+    def init():
+        line.set_ydata(np.sin(x))
+        return line,
+
+    ani = animation.FuncAnimation(fig=fig,
+                                  func=animate,
+                                  frames=1000,
+                                  init_func=init,
+                                  interval=20,
+                                  blit=False)
+
+    plt.show()
+
+if( __name__ == "__main__"):
+    animation_demo()
