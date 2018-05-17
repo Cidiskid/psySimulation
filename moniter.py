@@ -31,6 +31,21 @@ def Draw3dPairs(point_pairs):
 
     plt.show()
 
+def Draw2dScatterWithValue(point_pairs):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    x = np.array(point_pairs)[:,0]
+    y = np.array(point_pairs)[:,1]
+    z = np.array(point_pairs)[:,2]
+
+    close = z
+
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, c=close,  alpha=0.3, linewidth=0.0)
+
+    plt.show()
+
 def DrawHist(nums, label=None):
     import numpy as np
     import matplotlib.pyplot as plt
@@ -74,13 +89,31 @@ def animation_demo():
         return line,
 
     ani = animation.FuncAnimation(fig=fig,
-                                  func=animate,
                                   frames=1000,
                                   init_func=init,
                                   interval=20,
                                   blit=False)
 
     plt.show()
+
+def Draw2DViaPCA(features, value):
+    from sklearn.decomposition import PCA
+    import numpy as np
+    N = len(features)
+    pca = PCA(n_components=2)
+    X = np.array(features)
+    print(X.shape)
+    pca.fit(X)
+
+    X = X + np.random.uniform(-0.2, 0.2, X.shape)
+    layout2d = pca.transform(X)
+    value_norm = np.array(value)
+    value_norm = (value_norm - value_norm.min()) / (value_norm.max() - value_norm.min())
+    print(layout2d.shape)
+    print(layout2d[:10])
+    pairs = [ list(layout2d[i]) + list([value_norm[i]]) for i in range(N)]
+#    Draw3dPairs(pairs)
+    Draw2dScatterWithValue(pairs)
 
 if( __name__ == "__main__"):
     animation_demo()

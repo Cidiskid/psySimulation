@@ -3,5 +3,10 @@
         "screanlv" : "INFO",
         "filelv" : "INFO",
         "filepath" : "log.log"
+    },
+    "env" :{
+        "N" : 16,
+        "K" : 3,
+        "T" : 100
     }
 }
