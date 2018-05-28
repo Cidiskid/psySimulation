@@ -1,6 +1,8 @@
 from config import all_config
 import logging
 import time
+import csv
+
 
 def LogInit():
     all_config.load()
@@ -114,6 +116,19 @@ def Draw2DViaPCA(features, value):
     pairs = [ list(layout2d[i]) + list([value_norm[i]]) for i in range(N)]
 #    Draw3dPairs(pairs)
     Draw2dScatterWithValue(pairs)
+
+def AppendToCsv(list, filename):
+    try:
+        with open(filename, "r") as fp:
+            csv_r = csv.reader(fp)
+            data = [ r for r in csv_r]
+    except:
+        data = []
+    data.append(list)
+    with open(filename, "w") as fp:
+        csv_w = csv.writer(fp)
+        for r in data:
+            csv_w.writerow(r)
 
 if( __name__ == "__main__"):
     animation_demo()

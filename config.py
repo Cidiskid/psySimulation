@@ -18,6 +18,11 @@ class Config:
     def __getitem__(self, item):
         if(not self.loaded):
             raise Exception("Load config first")
-        return self.data[item]
+        try:
+            return self.data[item]
+        except:
+            raise Exception("{} is not found!".format(item))
+    def __setitem__(self, item, value):
+        self.data[item] = value
 
 all_config = Config("./config.json")

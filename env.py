@@ -57,12 +57,14 @@ class NKmodel:
 
 
 class Env:
-    def __init__(self, N, K, T):
-        self.N = N
-        self.K = K
-        self.models = {"st": NKmodel(N,K),
-                       "ed": NKmodel(N,K)}
-        self.T = T
+    def __init__(self, arg):
+        self.arg = arg
+        self.N = arg['N']
+        self.K = arg['K']
+        self.models = {"st": NKmodel(self.N,self.K),
+                       "ed": NKmodel(self.N,self.K)}
+        self.T = arg['T']
+        self.ESM = arg['ESM']
 
     def getValueFromStates(self, code, t):
         assert (len(code) == self.N)

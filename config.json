@@ -1,12 +1,7 @@
 {
-    "log" :{
-        "screanlv" : "INFO",
-        "filelv" : "INFO",
-        "filepath" : "log.log"
-    },
-    "env" :{
-        "N" : 16,
-        "K" : 3,
-        "T" : 100
-    }
+  "log": {
+    "screanlv": "INFO",
+    "filelv": "DEBUG",
+    "filepath": "log.log"
+  }
 }

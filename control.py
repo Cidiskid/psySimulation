@@ -1,11 +1,79 @@
-class FrameContral:
-    def __init__(self):
-        pass
+import arg
+from env import Env
+from agent import Agent
+from copy import deepcopy
+import acts
+import moniter
+import logging
+from config import all_config
 
-class StageContral:
+class Control:
     def __init__(self):
-        pass
+        self.global_arg = arg.init_global_arg()
+        self.main_env = Env(arg.init_env_arg(self.global_arg))
+        self.agents = []
 
-class ExpContral:
-    def __init__(self):
-        pass
+    def run_frame(self,Ti):
+        for i in range(len(self.agents)):
+            last_arg = deepcopy(self.agents[i].frame_arg)
+#            logging.debug("agent %d, %s"%(i,"{}".format(self.agents[i].frame_arg)))
+            self.agents[i].frame_arg = arg.init_frame_arg(
+                global_arg=self.global_arg,
+                env_arg=self.main_env.arg,
+                agent_arg=self.agents[i].agent_arg,
+                stage_arg=self.agents[i].stage_arg,
+                last_arg=last_arg,
+                Tp=Ti,
+                SSMfi=self.main_env.getValueFromStates(self.agents[i].state_now, Ti)
+            )
+
+        for i in range(len(self.agents)):
+            if(self.agents[i].frame_arg['PROC']['action']):
+                self.agents[i] = acts.act_zybkyb(self.main_env, self.agents[i], Ti)
+            else:
+                pass
+
+    def run_stage(self, Ti):
+        for i in range(len(self.agents)):
+            last_arg = deepcopy(self.agents[i].stage_arg)
+            self.agents[i].stage_arg = arg.init_stage_arg(self.global_arg,
+                                                          self.main_env.arg,
+                                                          self.agents[i].agent_arg,
+                                                          last_arg,
+                                                          Ti)
+        for i in range(self.global_arg['Tf']):
+            logging.info("frame %3d , Ti:%3d"%(i, Ti))
+            self.run_frame(Ti)
+            for k in range(5):
+                csv_info = [
+                    Ti + i,
+                    self.main_env.getValueFromStates(self.agents[k].state_now, Ti),
+                    self.agents[k].frame_arg['SSM']['f-req'],
+                    int(self.agents[k].frame_arg['PROC']['action']),
+                    self.agents[k].frame_arg['SSM']['f-need']
+                ]
+                moniter.AppendToCsv(csv_info, all_config['result_csv_path'][k])
+
+    def run_exp(self):
+        for i in range(self.global_arg["Nagent"]):
+            self.agents.append(Agent(arg.init_agent_arg(self.global_arg,
+                                                        self.main_env.arg)))
+            self.agents[i].state_now = [0 for _ in range(self.main_env.N)]
+        stage_num = self.global_arg['T'] / self.global_arg['Tf']
+        for k in range(5):
+            csv_head = ['frame', 'SSMfi', 'SSM_f-req', 'proc_action', 'SSM_f_need']
+            moniter.AppendToCsv(csv_head, all_config['result_csv_path'][k])
+        for i in range(stage_num):
+            Ti = i * self.global_arg['Tf'] + 1
+            logging.info("stage %3d , Ti:%3d"%(i, Ti))
+            self.run_stage(Ti)
+
+if(__name__ == "__main__"):
+    import time
+    import os
+    all_config.load()
+    moniter.LogInit()
+    logging.info("Start")
+    all_config['result_csv_path'] = [os.path.join("result", "res_%s_%02d.csv"%(time.strftime("%Y%m%d-%H%M%S"), i)) for i in range(5)]
+    main_control = Control()
+    main_control.run_exp()
