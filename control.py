@@ -52,17 +52,15 @@ class Control:
                     int(self.agents[k].frame_arg['PROC']['action']),
                     self.agents[k].frame_arg['SSM']['f-need'],
                     up_info['nkinfo']['max'],
-                    up_info['nkinfo']['min'],
-                    up_info['nkinfo']['mid'],
-                    up_info['nkinfo']['avg'],
                     up_info['nkinfo']['p0.75'],
+                    up_info['nkinfo']['mid'],
                     up_info['nkinfo']['p0.25'],
+                    up_info['nkinfo']['min'],
                     up_info['nk_peak']['max'],
-                    up_info['nk_peak']['min'],
-                    up_info['nk_peak']['mid'],
-                    up_info['nk_peak']['avg'],
                     up_info['nk_peak']['p0.75'],
-                    up_info['nk_peak']['p0.25']
+                    up_info['nk_peak']['mid'],
+                    up_info['nk_peak']['p0.25'],
+                    up_info['nk_peak']['min']
                 ]
                 moniter.AppendToCsv(csv_info, all_config['result_csv_path'][k])
 
@@ -75,8 +73,8 @@ class Control:
         stage_num = self.global_arg['T'] / self.global_arg['Tf']
         for k in range(self.global_arg["Nagent"]):
             csv_head = ['frame', 'SSMfi', 'SSM_f-req', 'proc_action', 'SSM_f_need',
-                        'nkmax', 'nkmin', 'nkmid', 'nkavg', 'nk0.75', "nk0.25",
-                        'peakmax', 'peakmin', 'peakmid', 'peakavg', 'peak0.75', "peak0.25"]
+                        'nkmax', 'nk0.75', 'nkmid', "nk0.25", 'nkmin',
+                        'peakmax', 'peak0.75', 'peakmid', "peak0.25", 'peakmin',]
             moniter.AppendToCsv(csv_head, all_config['result_csv_path'][k])
         for i in range(stage_num):
             Ti = i * self.global_arg['Tf'] + 1
