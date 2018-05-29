@@ -77,6 +77,21 @@ class Env:
         assert (0 <= x < 2**self.N)
         return self.getValueFromStates(NKmodel.getGrayCode(self.N, x), t)
 
+    def getAllValue(self, t):
+        return [self.getValue(i, t) for i in range(2**self.N)]
+
+    def getModelDistri(self, t):
+        all_value = sorted(self.getAllValue(t))
+        ret = {
+            "max": all_value[-1],
+            "min": all_value[0],
+            "avg": sum(all_value)/len(all_value),
+            "mid": all_value[len(all_value)//2],
+            "p0.25": all_value[len(all_value)//4],
+            "p0.75": all_value[len(all_value)*3//4],
+        }
+        return ret
+
 
 if (__name__ == "__main__"):
     import numpy as np

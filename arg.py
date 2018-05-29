@@ -42,8 +42,8 @@ def max_choice(items):
 
 def init_global_arg():
     arg = {
-        "Tf": 160,
-        'T': 640,
+        "Tf": 64,
+        'T': 320,
         "Nagent": 5
     }
     return arg
@@ -51,8 +51,8 @@ def init_global_arg():
 
 def init_env_arg(global_arg):
     arg = {
-        'N': 16,
-        'K': 2,
+        'N': 10,
+        'K': 0,
         'T': global_arg['T']
     }
     arg['ESM'] = {
@@ -72,7 +72,7 @@ def init_agent_arg(global_arg, env_arg):
         "xplt": Norm(0.5, 0.3),
         "rmb": 8
     }
-    arg["ob"] = (lambda x: Norm(x, 0.05 / arg['k']['insight']))
+    arg["ob"] = (lambda x: Norm(x, 0.005 / arg['k']['insight']))
     arg['default'] = {
         "stage": {},
         "frame": {
