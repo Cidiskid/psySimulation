@@ -13,7 +13,7 @@ class Control:
         self.main_env = Env(arg.init_env_arg(self.global_arg))
         self.agents = []
 
-    def run_frame(self,Ti):
+    def run_frame(self,Ti, up_info):
         for i in range(len(self.agents)):
             last_arg = deepcopy(self.agents[i].frame_arg)
 #            logging.debug("agent %d, %s"%(i,"{}".format(self.agents[i].frame_arg)))
@@ -33,7 +33,7 @@ class Control:
             else:
                 pass
 
-    def run_stage(self, Ti):
+    def run_stage(self, Ti, up_info):
         for i in range(len(self.agents)):
             last_arg = deepcopy(self.agents[i].stage_arg)
             self.agents[i].stage_arg = arg.init_stage_arg(self.global_arg,
@@ -43,37 +43,47 @@ class Control:
                                                           Ti)
         for i in range(self.global_arg['Tf']):
             logging.info("frame %3d , Ti:%3d"%(i, Ti))
-            self.run_frame(Ti)
-            nkinfo = self.main_env.getModelDistri(Ti)
-            for k in range(5):
+            self.run_frame(Ti, up_info)
+            for k in range(self.global_arg["Nagent"]):
                 csv_info = [
                     Ti + i,
                     self.main_env.getValueFromStates(self.agents[k].state_now, Ti),
                     self.agents[k].frame_arg['SSM']['f-req'],
                     int(self.agents[k].frame_arg['PROC']['action']),
                     self.agents[k].frame_arg['SSM']['f-need'],
-                    nkinfo['max'],
-                    nkinfo['min'],
-                    nkinfo['mid'],
-                    nkinfo['avg'],
-                    nkinfo['p0.75'],
-                    nkinfo['p0.25']
+                    up_info['nkinfo']['max'],
+                    up_info['nkinfo']['min'],
+                    up_info['nkinfo']['mid'],
+                    up_info['nkinfo']['avg'],
+                    up_info['nkinfo']['p0.75'],
+                    up_info['nkinfo']['p0.25'],
+                    up_info['nk_peak']['max'],
+                    up_info['nk_peak']['min'],
+                    up_info['nk_peak']['mid'],
+                    up_info['nk_peak']['avg'],
+                    up_info['nk_peak']['p0.75'],
+                    up_info['nk_peak']['p0.25']
                 ]
                 moniter.AppendToCsv(csv_info, all_config['result_csv_path'][k])
 
     def run_exp(self):
+        up_info = {}
         for i in range(self.global_arg["Nagent"]):
             self.agents.append(Agent(arg.init_agent_arg(self.global_arg,
                                                         self.main_env.arg)))
             self.agents[i].state_now = [0 for _ in range(self.main_env.N)]
         stage_num = self.global_arg['T'] / self.global_arg['Tf']
-        for k in range(5):
-            csv_head = ['frame', 'SSMfi', 'SSM_f-req', 'proc_action', 'SSM_f_need', 'nkmax', 'nkmin', 'nkmid', 'nkavg', 'nk0.75', "nk0.25"]
+        for k in range(self.global_arg["Nagent"]):
+            csv_head = ['frame', 'SSMfi', 'SSM_f-req', 'proc_action', 'SSM_f_need',
+                        'nkmax', 'nkmin', 'nkmid', 'nkavg', 'nk0.75', "nk0.25",
+                        'peakmax', 'peakmin', 'peakmid', 'peakavg', 'peak0.75', "peak0.25"]
             moniter.AppendToCsv(csv_head, all_config['result_csv_path'][k])
         for i in range(stage_num):
             Ti = i * self.global_arg['Tf'] + 1
             logging.info("stage %3d , Ti:%3d"%(i, Ti))
-            self.run_stage(Ti)
+            up_info['nkinfo'] = self.main_env.getModelDistri(Ti)
+            up_info['nk_peak'] = self.main_env.getModelPeakDistri(Ti)
+            self.run_stage(Ti, up_info)
 
 if(__name__ == "__main__"):
     import time

@@ -43,7 +43,7 @@ def max_choice(items):
 def init_global_arg():
     arg = {
         "Tf": 64,
-        'T': 320,
+        'T': 64,
         "Nagent": 5
     }
     return arg
@@ -52,7 +52,7 @@ def init_global_arg():
 def init_env_arg(global_arg):
     arg = {
         'N': 10,
-        'K': 0,
+        'K': 8,
         'T': global_arg['T']
     }
     arg['ESM'] = {

@@ -80,9 +80,28 @@ class Env:
     def getAllValue(self, t):
         return [self.getValue(i, t) for i in range(2**self.N)]
 
-    def getModelDistri(self, t):
-        all_value = sorted(self.getAllValue(t))
-        ret = {
+    def getAllPeakValue(self, t):
+        peak_value = []
+        for i in range(2**self.N):
+            state = NKmodel.getGrayCode(self.N, i)
+            state_value = self.getValueFromStates(state, t)
+
+            flag = False
+            for j in range(self.N):
+                state_t = deepcopy(state)
+                state_t[j] = 1 - int(state[j])
+                if(state_value < self.getValueFromStates(state_t, t)):
+                    flag = True
+                    continue
+            if(not flag):
+                peak_value.append(state_value)
+        logging.info("Ti: {}, peak num: {}".format(t, len(peak_value)))
+        return peak_value
+
+    @staticmethod
+    def _getDistri(nums):
+        all_value = sorted(nums)
+        return {
             "max": all_value[-1],
             "min": all_value[0],
             "avg": sum(all_value)/len(all_value),
@@ -90,7 +109,12 @@ class Env:
             "p0.25": all_value[len(all_value)//4],
             "p0.75": all_value[len(all_value)*3//4],
         }
-        return ret
+
+    def getModelDistri(self, t):
+        return Env._getDistri(self.getAllValue(t))
+
+    def getModelPeakDistri(self, t):
+        return Env._getDistri(self.getAllPeakValue(t))
 
 
 if (__name__ == "__main__"):
