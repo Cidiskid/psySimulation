@@ -91,8 +91,16 @@ if(__name__ == "__main__"):
     all_config.load()
     moniter.LogInit()
     logging.info("Start")
-    exp_id = "sigle_view_"+time.strftime("%Y%m%d-%H%M%S")
     global_arg = arg.init_global_arg()
+    env_arg = arg.init_env_arg(global_arg)
+    exp_id = "_".join([
+        "sigleview",
+        time.strftime("%Y%m%d-%H%M%S"),
+        "N"+str(env_arg['N']),
+        "K"+str(env_arg['K']),
+        "T"+str(global_arg['T']),
+        "Tf"+str(global_arg['Tf'])
+        ])
     try:
         os.mkdir(os.path.join("result",exp_id))
     except:
